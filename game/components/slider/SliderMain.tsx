@@ -1,24 +1,26 @@
-import React, { Dispatch, FC, SetStateAction} from 'react'
+import React, { Dispatch, FC, FormEvent, SetStateAction} from 'react'
 import styled from 'styled-components'
 import { IMark } from '../../types';
-import {Slider} from '@mui/material';
+import { Slider } from '@mui/material';
 import { countWidth } from '../../utils';
 
 interface PropsSlider {
     arr: IMark[];
     title: string;
-    value: string;
-    setValue: Dispatch<SetStateAction<string>>;
+    value: number;
+    setValue: Dispatch<SetStateAction<number>>;
 }
 
 const SliderMain: FC<PropsSlider> = ({arr, title, value, setValue}) => {
     const width = countWidth(arr.length);
+    const handle = (e: any) => setValue(e.target.value)
+
   return (
     <CountItems width={width}>
         <H>{title}</H>
         <Slider
-            onChange={(e) => setValue(e.target.value)}
             value={value}
+            onChange={handle}
             defaultValue={1}
             step={1}
             marks={arr}
