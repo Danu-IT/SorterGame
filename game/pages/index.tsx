@@ -2,11 +2,13 @@ import {MainLayout} from '../components/layouts/MainLayout'
 import styled from 'styled-components'
 import SliderMain from '../components/slider/SliderMain'
 import { countItems, countRangeGenerate, generateArr, generateLetters, meaning } from '../utils'
-import { Dispatch, SetStateAction, useEffect, useMemo, useState } from 'react';
+import { useState } from 'react';
+import Link from 'next/link';
+import { PropsButton, PropsContainer } from '../types';
 
 export default function Home() {
-  const [valueItems, setValueItems] = useState<string>('1');
-  const [valueRange, setValueRange] = useState<string>('1');
+  const [valueItems, setValueItems] = useState<number>(1);
+  const [valueRange, setValueRange] = useState<number>(1);
   const [disabled, setDisabled] = useState<boolean>(false);
 
   const size = countItems[+valueItems - 1].label;
@@ -16,6 +18,7 @@ export default function Home() {
   let end: string | undefined = '';
   let letter: string = '';
   let arr: any[] = [];
+  let increasing: boolean = false;
 
   if(countRange == 'A'){
     letter = countRangeGenerate(+valueRange)
@@ -36,14 +39,15 @@ export default function Home() {
     setDisabled(prev => !prev);
   }
 
-  useMemo(() => {
-    if(disabled) arr;
-    else arr.reverse()
-  },[disabled])
+  if(disabled) {
+    increasing = true;
+  } else {
+    increasing = false;
+  }
 
   return (
     <MainLayout title={'Main page'}>
-      <Container>
+      <Container background={'./bg-main.png'}>  
         <MainCardShell>
           <MainCard>
             <MainCardContent>
@@ -53,8 +57,9 @@ export default function Home() {
                 <Button onClick={() => toggleBtn(arr)} disabled={disabled} padding={'10px'} color={'#423F45'} bg={'#FFD748'}>По возрастанию</Button>
                 <Button onClick={() => toggleBtn(arr)} disabled={!disabled} padding={'10px'} color={'#423F45'} bg={'#FFD748'}>По убыванию</Button>
               </ButtonContainer>
-              <Button marginTop={'70px'} padding={'15px'} color={'white'} bg={'#38DF7A'}>Играть</Button>
-              <div style={{display: 'flex'}}>{arr.map(el => (<div>{el}.</div>))}</div>
+              <Link href={{pathname: "game", query: {arr: arr, increasing: increasing}}}>
+                <Button marginTop={'70px'} padding={'15px'} color={'white'} bg={'#2BD600'}>Играть</Button>
+              </Link>
             </MainCardContent>
           </MainCard>
         </MainCardShell>
@@ -63,8 +68,9 @@ export default function Home() {
   )
 }
 
-const Container = styled.div`
-  background-image: url('./bg-main.png');
+export const Container = styled.div<PropsContainer>`
+  background-image: url(${p => p.background});
+  flex-direction: ${p => p.flexDirection};
   background-repeat: no-repeat;
   background-position: center;
   background-size: cover;
@@ -104,15 +110,8 @@ const ButtonContainer = styled.div`
   justify-content: space-between;
   margin-top: 50px;
 `
-interface PropsButton {
-  bg: string;
-  color: string;
-  marginTop?: string;
-  padding?: string;
-  onClick?: Dispatch<SetStateAction<number>>;
-}
 
-const Button = styled.button<PropsButton>`
+export const Button = styled.button<PropsButton>`
   background: ${p => p.bg};
   color: ${p => p.color};
   border: none;
